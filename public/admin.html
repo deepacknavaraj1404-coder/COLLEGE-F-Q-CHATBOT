@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEEPACK COLLEGE AI CHATBOT</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f6fa;
+    }
+
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+    }
+
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #495057;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #ff9800;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+    }
+
+    /* Admin Panel Styles */
+    .admin-container {
+      display: none;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar h1 {
+      font-size: 24px;
+    }
+
+    .navbar-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .user-info {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .logout-btn {
+      padding: 8px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: white;
+      color: #ff9800;
+    }
+
+    .main-content {
+      padding: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid #ff9800;
+    }
+
+    .stat-card h3 {
+      font-size: 14px;
+      color: #6c757d;
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .stat-card .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 13px;
+      color: #6c757d;
+    }
+
+    .section {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f1f3f5;
+    }
+
+    .section-header h2 {
+      font-size: 22px;
+      color: #333;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    }
+
+    .faq-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .faq-table th {
+      background: #f8f9fa;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      color: #495057;
+      font-size: 14px;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .faq-table td {
+      padding: 15px;
+      border-bottom: 1px solid #dee2e6;
+      font-size: 14px;
+    }
+
+    .faq-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .faq-table .question {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .faq-table .answer {
+      color: #6c757d;
+      max-width: 400px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .keywords {
+      color: #ff9800;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .category-badge {
+      background: #ff9800;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .edit-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background: #218838;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background: white;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f1f3f5;
+    }
+
+    .modal-header h3 {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .close-btn {
+      font-size: 28px;
+      cursor: pointer;
+      color: #6c757d;
+      background: none;
+      border: none;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: #f1f3f5;
+      color: #333;
+    }
+
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #ff9800;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6c757d;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #495057;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .main-content {
+        padding: 20px;
+      }
+
+      .faq-table {
+        font-size: 13px;
+      }
+
+      .faq-table .answer {
+        max-width: 200px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Login Section -->
+  <div class="login-container" id="loginContainer">
+    <div class="login-box">
+      <h2>🔐 Admin Login</h2>
+      <div class="error-message" id="loginError"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+      <p style="text-align: center; margin-top: 20px; font-size: 13px; color: #6c757d;">
+        Default credentials: admin / admin123
+      </p>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="admin-container" id="adminContainer">
+    <div class="navbar">
+      <h1>📊 FAQ Admin Panel</h1>
+      <div class="navbar-right">
+        <span class="user-info">👤 <span id="adminUsername"></span></span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- Analytics Section -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total FAQs</h3>
+          <div class="stat-value" id="totalFaqs">0</div>
+          <div class="stat-label">Questions in database</div>
+        </div>
+        <div class="stat-card">
+          <h3>User Questions</h3>
+          <div class="stat-value" id="totalQuestions">0</div>
+          <div class="stat-label">Asked by users</div>
+        </div>
+        <div class="stat-card">
+          <h3>Match Rate</h3>
+          <div class="stat-value" id="matchRate">0%</div>
+          <div class="stat-label">Successfully answered</div>
+        </div>
+        <div class="stat-card">
+          <h3>Avg. Confidence</h3>
+          <div class="stat-value" id="avgConfidence">0%</div>
+          <div class="stat-label">Match accuracy</div>
+        </div>
+      </div>
+
+      <!-- FAQs Management -->
+      <div class="section">
+        <div class="section-header">
+          <h2>FAQ Management</h2>
+          <button class="btn" onclick="openAddModal()">
+            ➕ Add New FAQ
+          </button>
+        </div>
+        <div id="faqsContainer"></div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="section">
+        <div class="section-header">
+          <h2>Recent User Questions</h2>
+        </div>
+        <div id="recentQuestionsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit FAQ Modal -->
+  <div class="modal" id="faqModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add New FAQ</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="faqForm">
+        <input type="hidden" id="faqId">
+        <div class="form-group">
+          <label for="faqQuestion">Question *</label>
+          <input type="text" id="faqQuestion" required placeholder="e.g., What is the admission process?">
+        </div>
+        <div class="form-group">
+          <label for="faqAnswer">Answer *</label>
+          <textarea id="faqAnswer" required placeholder="Provide a detailed answer..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="faqKeywords">Keywords (comma-separated)</label>
+          <input type="text" id="faqKeywords" placeholder="e.g., admission,apply,enroll,registration">
+        </div>
+        <div class="form-group">
+          <label for="faqCategory">Category</label>
+          <input type="text" id="faqCategory" placeholder="e.g., Admissions, Fees, Programs">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn">Save FAQ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    let authToken = null;
+    let currentEditId = null;
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('loginError');
+
+      try {
+        const response = await fetch(`${API_URL}/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          authToken = data.token;
+          localStorage.setItem('authToken', authToken);
+          localStorage.setItem('username', data.username);
+          showAdminPanel(data.username);
+        } else {
+          errorDiv.textContent = data.error || 'Login failed';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Connection error. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+    });
+
+    function showAdminPanel(username) {
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('adminContainer').style.display = 'block';
+      document.getElementById('adminUsername').textContent = username;
+      loadDashboard();
+    }
+
+    function logout() {
+      authToken = null;
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('username');
+      document.getElementById('loginContainer').style.display = 'flex';
+      document.getElementById('adminContainer').style.display = 'none';
+      document.getElementById('loginForm').reset();
+    }
+
+    async function loadDashboard() {
+      await Promise.all([
+        loadFAQs(),
+        loadAnalytics()
+      ]);
+    }
+
+    async function loadFAQs() {
+      try {
+        const response = await fetch(`${API_URL}/admin/faqs`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const faqs = await response.json();
+        document.getElementById('totalFaqs').textContent = faqs.length;
+
+        const container = document.getElementById('faqsContainer');
+
+        if (faqs.length === 0) {
+          container.innerHTML = '<div class="empty-state"><h3>No FAQs yet</h3><p>Click "Add New FAQ" to get started</p></div>';
+          return;
+        }
+
+        let html = '<table class="faq-table"><thead><tr><th>Question</th><th>Answer</th><th>Keywords</th><th>Category</th><th>Actions</th></tr></thead><tbody>';
+
+        faqs.forEach(faq => {
+          html += `
+            <tr>
+              <td class="question">${escapeHtml(faq.question)}</td>
+              <td class="answer" title="${escapeHtml(faq.answer)}">${escapeHtml(faq.answer)}</td>
+              <td class="keywords">${escapeHtml(faq.keywords || 'N/A')}</td>
+              <td><span class="category-badge">${escapeHtml(faq.category || 'General')}</span></td>
+              <td class="actions">
+                <button class="action-btn edit-btn" onclick="editFAQ(${faq.id})">Edit</button>
+                <button class="action-btn delete-btn" onclick="deleteFAQ(${faq.id})">Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading FAQs:', error);
+      }
+    }
+
+    async function loadAnalytics() {
+      try {
+        const response = await fetch(`${API_URL}/admin/analytics`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const data = await response.json();
+
+        document.getElementById('totalQuestions').textContent = data.totalQuestions || 0;
+        document.getElementById('matchRate').textContent = `${data.matchRate || 0}%`;
+        document.getElementById('avgConfidence').textContent = `${data.averageConfidence || 0}%`;
+
+        // Display recent questions
+        const container = document.getElementById('recentQuestionsContainer');
+        if (data.recentQuestions && data.recentQuestions.length > 0) {
+          let html = '<table class="faq-table"><thead><tr><th>Question</th><th>Matched</th><th>Confidence</th><th>Time</th></tr></thead><tbody>';
+
+          data.recentQuestions.forEach(q => {
+            const time = new Date(q.timestamp).toLocaleString();
+            html += `
+              <tr>
+                <td>${escapeHtml(q.user_question)}</td>
+                <td>${q.matched_faq_id ? '✅ Yes' : '❌ No'}</td>
+                <td>${q.confidence_score ? Math.round(q.confidence_score) + '%' : 'N/A'}</td>
+                <td style="font-size: 12px; color: #6c757d;">${time}</td>
+              </tr>
+            `;
+          });
+
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        } else {
+          container.innerHTML = '<div class="empty-state"><h3>No questions yet</h3><p>Waiting for user interactions</p></div>';
+        }
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+      }
+    }
+
+    function openAddModal() {
+      currentEditId = null;
+      document.getElementById('modalTitle').textContent = 'Add New FAQ';
+      document.getElementById('faqForm').reset();
+      document.getElementById('faqId').value = '';
+      document.getElementById('faqModal').style.display = 'block';
+    }
+
+    async function editFAQ(id) {
+      try {
+        const response = await fetch(`${API_URL}/admin/faqs`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const faqs = await response.json();
+        const faq = faqs.find(f => f.id === id);
+
+        if (faq) {
+          currentEditId = id;
+          document.getElementById('modalTitle').textContent = 'Edit FAQ';
+          document.getElementById('faqId').value = id;
+          document.getElementById('faqQuestion').value = faq.question;
+          document.getElementById('faqAnswer').value = faq.answer;
+          document.getElementById('faqKeywords').value = faq.keywords || '';
+          document.getElementById('faqCategory').value = faq.category || '';
+          document.getElementById('faqModal').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error loading FAQ:', error);
+      }
+    }
+
+    async function deleteFAQ(id) {
+      if (!confirm('Are you sure you want to delete this FAQ?')) return;
+
+      try {
+        const response = await fetch(`${API_URL}/admin/faqs/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (response.ok) {
+          loadFAQs();
+        } else {
+          alert('Error deleting FAQ');
+        }
+      } catch (error) {
+        console.error('Error deleting FAQ:', error);
+        alert('Error deleting FAQ');
+      }
+    }
+
+    document.getElementById('faqForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const faqData = {
+        question: document.getElementById('faqQuestion').value,
+        answer: document.getElementById('faqAnswer').value,
+        keywords: document.getElementById('faqKeywords').value,
+        category: document.getElementById('faqCategory').value || 'General'
+      };
+
+      try {
+        const id = document.getElementById('faqId').value;
+        const url = id ? `${API_URL}/admin/faqs/${id}` : `${API_URL}/admin/faqs`;
+        const method = id ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify(faqData)
+        });
+
+        if (response.ok) {
+          closeModal();
+          loadFAQs();
+        } else {
+          alert('Error saving FAQ');
+        }
+      } catch (error) {
+        console.error('Error saving FAQ:', error);
+        alert('Error saving FAQ');
+      }
+    });
+
+    function closeModal() {
+      document.getElementById('faqModal').style.display = 'none';
+      document.getElementById('faqForm').reset();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Check for existing session
+    window.addEventListener('load', () => {
+      const token = localStorage.getItem('authToken');
+      const username = localStorage.getItem('username');
+
+      if (token && username) {
+        authToken = token;
+        showAdminPanel(username);
+      }
+    });
+
+    // Close modal on outside click
+    window.onclick = function (event) {
+      const modal = document.getElementById('faqModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+
+</html>

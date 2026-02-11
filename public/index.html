@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College FAQ Chatbot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      max-height: 700px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+      color: white;
+      padding: 25px 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .quick-questions {
+      padding: 20px 30px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .quick-questions h3 {
+      font-size: 14px;
+      color: #495057;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .quick-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .quick-btn {
+      padding: 8px 16px;
+      background: white;
+      border: 2px solid #ff9800;
+      color: #ff9800;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    .quick-btn:hover {
+      background: #ff9800;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px;
+      background: #f8f9fa;
+    }
+
+    .message {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .message-content {
+      max-width: 70%;
+      padding: 15px 20px;
+      border-radius: 18px;
+      line-height: 1.5;
+    }
+
+    .message.bot .message-content {
+      background: white;
+      color: #333;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .message.user .message-content {
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+      color: white;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      margin: 0 12px;
+      flex-shrink: 0;
+    }
+
+    .message.bot .avatar {
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+      color: white;
+    }
+
+    .message.user .avatar {
+      background: #fff3e0;
+      color: #ff9800;
+    }
+
+    .confidence {
+      display: inline-block;
+      background: #28a745;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    .confidence.medium {
+      background: #ffc107;
+    }
+
+    .confidence.low {
+      background: #dc3545;
+    }
+
+    .suggestions {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .suggestions h4 {
+      font-size: 13px;
+      color: #6c757d;
+      margin-bottom: 8px;
+    }
+
+    .suggestion-item {
+      padding: 8px 12px;
+      background: white;
+      border-left: 3px solid #ff9800;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      border-radius: 4px;
+    }
+
+    .suggestion-item:hover {
+      background: #e9ecef;
+      transform: translateX(5px);
+    }
+
+    .category-tag {
+      display: inline-block;
+      background: #e9ecef;
+      color: #495057;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      margin-left: 8px;
+      font-weight: 600;
+    }
+
+    .input-container {
+      padding: 20px 30px;
+      background: white;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      gap: 15px;
+    }
+
+    #userInput {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid #e9ecef;
+      border-radius: 25px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    #userInput:focus {
+      border-color: #ff9800;
+    }
+
+    #sendBtn {
+      padding: 15px 35px;
+      background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+    }
+
+    #sendBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6);
+    }
+
+    #sendBtn:active {
+      transform: translateY(0);
+    }
+
+    #sendBtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 15px;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #ff9800;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+        opacity: 0.7;
+      }
+
+      30% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
+
+    .welcome-message {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6c757d;
+    }
+
+    .welcome-message h2 {
+      color: #495057;
+      margin-bottom: 15px;
+      font-size: 24px;
+    }
+
+    .welcome-message p {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+      }
+
+      .message-content {
+        max-width: 85%;
+      }
+
+      .quick-btns {
+        flex-direction: column;
+      }
+
+      .quick-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎓 DEEPACK COLLEGE</h1>
+      <p>Ask me anything about admissions, programs, fees, and more!</p>
+    </div>
+
+    <div class="quick-questions" id="quickQuestions">
+      <h3>Popular Questions:</h3>
+      <div class="quick-btns" id="quickBtns"></div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="welcome-message">
+        <h2>👋 Welcome!</h2>
+        <p>I'm here to help answer your questions about our college.<br>
+          Try asking about admissions, programs, fees, or click a quick question above!</p>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <input type="text" id="userInput" placeholder="Type your question here..." autocomplete="off">
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    let isProcessing = false;
+
+    // Load quick questions on startup
+    async function loadQuickQuestions() {
+      try {
+        const response = await fetch(`${API_URL}/faqs`);
+        const faqs = await response.json();
+
+        const quickBtnsContainer = document.getElementById('quickBtns');
+        const displayFaqs = faqs.slice(0, 5);
+
+        displayFaqs.forEach(faq => {
+          const btn = document.createElement('button');
+          btn.className = 'quick-btn';
+          btn.textContent = faq.question;
+          btn.onclick = () => {
+            document.getElementById('userInput').value = faq.question;
+            sendMessage();
+          };
+          quickBtnsContainer.appendChild(btn);
+        });
+      } catch (error) {
+        console.error('Error loading quick questions:', error);
+      }
+    }
+
+    function addMessage(content, isUser, data = {}) {
+      const chatContainer = document.getElementById('chatContainer');
+
+      // Remove welcome message if it exists
+      const welcomeMsg = chatContainer.querySelector('.welcome-message');
+      if (welcomeMsg) welcomeMsg.remove();
+
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = isUser ? '👤' : '🤖';
+
+      const messageContent = document.createElement('div');
+      messageContent.className = 'message-content';
+
+      if (isUser) {
+        messageContent.textContent = content;
+      } else {
+        messageContent.innerHTML = content;
+
+        // Add confidence badge
+        if (data.confidence) {
+          const confidenceBadge = document.createElement('span');
+          confidenceBadge.className = 'confidence';
+          if (data.confidence >= 70) {
+            confidenceBadge.className += ' high';
+          } else if (data.confidence >= 40) {
+            confidenceBadge.className += ' medium';
+          } else {
+            confidenceBadge.className += ' low';
+          }
+          confidenceBadge.textContent = `${data.confidence}% match`;
+          messageContent.appendChild(document.createElement('br'));
+          messageContent.appendChild(confidenceBadge);
+        }
+
+        // Add category tag
+        if (data.category) {
+          const categoryTag = document.createElement('span');
+          categoryTag.className = 'category-tag';
+          categoryTag.textContent = data.category;
+          messageContent.appendChild(categoryTag);
+        }
+
+        // Add suggestions
+        if (data.suggestions && data.suggestions.length > 0) {
+          const suggestionsDiv = document.createElement('div');
+          suggestionsDiv.className = 'suggestions';
+          suggestionsDiv.innerHTML = '<h4>Related questions:</h4>';
+
+          data.suggestions.forEach(suggestion => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.className = 'suggestion-item';
+            suggestionItem.innerHTML = `${suggestion.question} <span class="category-tag">${suggestion.category}</span>`;
+            suggestionItem.onclick = () => {
+              document.getElementById('userInput').value = suggestion.question;
+              sendMessage();
+            };
+            suggestionsDiv.appendChild(suggestionItem);
+          });
+
+          messageContent.appendChild(suggestionsDiv);
+        }
+      }
+
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(messageContent);
+      chatContainer.appendChild(messageDiv);
+
+      // Scroll to bottom
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const chatContainer = document.getElementById('chatContainer');
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message bot';
+      typingDiv.id = 'typingIndicator';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = '🤖';
+
+      const indicator = document.createElement('div');
+      indicator.className = 'message-content';
+      indicator.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+
+      typingDiv.appendChild(avatar);
+      typingDiv.appendChild(indicator);
+      chatContainer.appendChild(typingDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      const indicator = document.getElementById('typingIndicator');
+      if (indicator) indicator.remove();
+    }
+
+    async function sendMessage() {
+      if (isProcessing) return;
+
+      const input = document.getElementById('userInput');
+      const question = input.value.trim();
+
+      if (!question) return;
+
+      isProcessing = true;
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending...';
+
+      // Add user message
+      addMessage(question, true);
+      input.value = '';
+
+      // Show typing indicator
+      showTypingIndicator();
+
+      try {
+        const response = await fetch(`${API_URL}/ask`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ question })
+        });
+
+        const data = await response.json();
+
+        // Simulate thinking time
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        hideTypingIndicator();
+
+        if (data.found) {
+          addMessage(data.answer, false, {
+            confidence: data.confidence,
+            category: data.category,
+            suggestions: data.suggestions
+          });
+        } else {
+          addMessage(data.message, false, {
+            suggestions: data.suggestions
+          });
+        }
+      } catch (error) {
+        hideTypingIndicator();
+        addMessage('Sorry, I encountered an error. Please try again or contact support.', false);
+        console.error('Error:', error);
+      } finally {
+        isProcessing = false;
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+        input.focus();
+      }
+    }
+
+    // Event listeners
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('userInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Initialize
+    loadQuickQuestions();
+  </script>
+</body>
+
+</html>
